@@ -1,3 +1,4 @@
+// Must perform "aws configure", then terraform init
 //terraform {
 //  backend "s3" {
 //    bucket = "terraform-remote-state-43125xfd"
