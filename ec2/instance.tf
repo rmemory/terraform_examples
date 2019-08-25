@@ -19,10 +19,17 @@ resource "aws_instance" "example" {
         "sudo /tmp/script.sh"
       ]
   }
+  provisioner "local-exec" {
+    command = "echo ${aws_instance.example.public_ip} >> private_ips.txt"
+  }
   connection {
     // When spinning up instances on AWS, ec2-user is the default user
     host = "${self.public_ip}"
     user = "${var.INSTANCE_USERNAME}"
     private_key = "${file("${var.PATH_TO_PRIVATE_KEY}")}"
   }
+}
+
+output "ip" {
+  value = "${aws_instance.example.public_ip}"
 }
