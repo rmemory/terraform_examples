@@ -1,19 +1,33 @@
-variable "role_arn_id" {
-  type        = "string"
+variable "ROLE_ARN_ID" {
+  type = "string"
   description = "ARN value for IAM power user role"
 }
 
 variable "AWS_REGION" {
-  type        = "string"
-  default     = "us-east-1"
+  type = "string"
+  default = "us-east-1"
 }
 
 variable "AMIS" {
-  type        = "map"
+  type = "map"
   // see https://cloud-images.ubuntu.com/locator/
-  default     = {
+  default = {
     us-east-1 = "ami-00290d66f0da25f73"
 	us-east-2 = "ami-0b8b176ef4535c8e4"
 	eu-west-1 = "ami-01787df05261973d3"
   }
+}
+
+variable "PATH_TO_PUBLIC_KEY" {
+	default = "my_key.pub"
+}
+
+variable "PATH_TO_PRIVATE_KEY" {
+	default = "my_key"
+}
+
+variable "INSTANCE_USERNAME" {
+	type = "string"
+	default = "ubuntu"
+	description = "Username to use in instance"
 }
