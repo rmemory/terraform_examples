@@ -6,7 +6,9 @@ terraform {
   backend "s3" {
     region  = "us-east-1"
     profile = "default"
-    key     = "terraformstatefile"
-    bucket  = "terraformbucket123487657"
+
+    # aws s3 cp s3://terraformbucket12348765/terraformstatefile .
+    key    = "terraformstatefile"
+    bucket = "terraformbucket12348765"
   }
 }

@@ -9,7 +9,8 @@
           "elasticloadbalancing:*",
           "ssm:Describe*",
           "ssm:Get*",
-          "s3:*"
+          "s3:*",
+          "route53:*"
         ],
         "Effect": "Allow",
         "Resource": "*"
