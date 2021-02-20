@@ -178,3 +178,14 @@ interpreter_python = auto_silent
 * vpcs
 * routing tables
 * security groups
+
+11) To enable logging in terraform
+
+export TF_LOG=TRACE
+export TF_LOG_PATH=/my/path/logfile.txt
+
+export ANSIBLE_DEBUG
+export ANSIBLE_VERBOSITY=2
+
+-v 
+-vv

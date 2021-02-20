@@ -1,3 +1,33 @@
+resource "aws_security_group" "lb-sg" {
+  provider    = aws.region-default
+  name        = "lb-sg"
+  description = "Allow 443 and http traffic"
+  vpc_id      = aws_vpc.vpc.id
+
+  ingress {
+    description = "Allow 443 from anywhere (forwarded to application port on master-sg)"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    description = "Allow 80 from anywhere for redirection"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+
 # A load balancer routes traffic to target groups. A target group can be a 
 # group of EC2 instances, lambdas, or IP addresses. It can also carry out 
 # health checks.
