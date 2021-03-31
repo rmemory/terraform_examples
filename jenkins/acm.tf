@@ -30,8 +30,8 @@ resource "aws_acm_certificate" "jenkins-lb-https" {
 # certificate, deploy the required validation records and wait for validation 
 # to complete.
 resource "aws_acm_certificate_validation" "cert" {
-  provider                = aws.region-master
-  certificate_arn         = aws_acm_certificate.jenkins-lb-https.arn # The ARN of the certificate that is being validated.
+  provider        = aws.region-master
+  certificate_arn = aws_acm_certificate.jenkins-lb-https.arn # The ARN of the certificate that is being validated.
 
   for_each                = aws_route53_record.cert_validation
   validation_record_fqdns = [aws_route53_record.cert_validation[each.key].fqdn] # List of FQDNs that will be used to perform the validation.

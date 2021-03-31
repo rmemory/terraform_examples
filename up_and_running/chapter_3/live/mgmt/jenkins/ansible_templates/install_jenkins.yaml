@@ -1,0 +1,80 @@
+---
+# $ ansible-playbook --syntax-check -e"passed_in_hosts=localhost" ansible_templates/install_jenkins.yaml 
+# $ echo $?
+
+- hosts: "{{ passed_in_hosts }}"
+  become: yes
+  remote_user: ec2-user
+  become_user: root
+  tasks:
+    - name: install dependencies (wget, java 1.8, and git)
+      yum:
+        name: "{{ package }} "
+        state: present
+      vars:
+        package:
+        - wget
+        - java-1.8.0-openjdk-devel
+        - git
+      
+    - name: Download Jenkins workspace from git to temporary location
+    # https://www.jeffgeerling.com/blog/2018/cloning-private-github-repositories-ansible-on-remote-server-through-ssh
+      git:
+        repo: https://github.com/linuxacademy/content-terraform-jenkins.git
+        dest: /tmp/jenkins
+
+    - name: Add Jenkins Repo to yum
+      get_url: # Works for http, https, and ftp
+        url: https://pkg.jenkins.io/redhat/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+    
+    - name: Import Jenkins Repo GPG key
+      rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat/jenkins.io.key
+ 
+    - name: install Jenkins
+      yum:
+        name: jenkins
+        state: present
+
+    - name: Temporarily Stop Jenkins
+      service: 
+        name: jenkins 
+        state: stopped
+
+    - name: Modify user shell
+      user:
+        name: jenkins
+        shell: /bin/bash  
+         
+    - name: Delete Jenkins default workspace dir 
+      file:
+        state: absent
+        path: /var/lib/jenkins
+    
+    - name: Copy over cloned Jenkins (see above) to /var/lib/jenkins
+      copy:
+        remote_src: yes # src dir is on the dest EC2 and not on terraform controller node (ie. not the host where we are running terraform from)
+        src: /tmp/jenkins/jenkins
+        dest: /var/lib
+        
+    - name: Restore jenkins user ownership on /var/lib/jenkins
+      file:
+        path: /var/lib/jenkins
+        state: directory
+        recurse: yes
+        owner: jenkins
+
+    - name: Start Jenkins
+      service:
+        name: jenkins
+        state: started
+        enabled: yes
+
+    # TODO: Create non-default credentials for Jenkins
+
+    - name: Wait until Jenkins is up
+      shell: result_first=1; while [[ $result_first != 0 ]]; do if [[ `grep 'Jenkins is fully up and running' /var/log/jenkins/jenkins.log` ]];then result_first=0;else sleep 4;fi;done
+      register: result # Ansible stores the result of the previous shell command here
+      until: result.rc == 0
