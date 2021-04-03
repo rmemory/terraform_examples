@@ -3,5 +3,6 @@ terraform.tfstate.backup
 *.plan
 *.tfvars
 .terraform*
+*.zip
 my_key
 my_key.pub
